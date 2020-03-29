@@ -4,7 +4,7 @@
 # ex. VCF_EXTRAS="--double-id --allow-extra-chr"
 
 VCF_EXTRAS=""
-EXEC_EXTRAS="--r2"
+EXEC_EXTRAS="--r2 "
 
 alias plink="./plink/plink"
 
@@ -68,7 +68,10 @@ done
 bed_name="${input##*/}"
 bed_name="${bed_name%.*}"
 bed_dir=bed_files/$bed_name
-plink --vcf $input --out $bed_dir $VCF_EXTRAS
+echo
+plink --vcf $input --out $bed_dir $VCF_EXTRAS 1>/dev/null
+
+[ -f $bed_dir.bed ] || exit 1
 
 # run plink
 [ -d ${output%/*} ] || mkdir -p ${output%/*}
@@ -76,4 +79,8 @@ plink --bfile $bed_dir \
       $EXEC_EXTRAS \
       --ld-window-r2 $r2lim \
       --out $output \
-      --threads $threads
+      --threads $threads \
+      1>/dev/null
+
+[ -f $output.ld ] || exit 1
+echo "Output saved on \"$output\""
